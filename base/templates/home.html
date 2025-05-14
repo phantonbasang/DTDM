@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class='container'>
+    <p>Welcome Home </p>
+    <ul>
+        <li> <a href="#"> <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+            </form> </a> 
+        </li>
+        <li> <a href="#"> <form action="{% url 'base:latest_news' %}">
+            {% csrf_token %}
+            <button type="submit">News</button>
+        </li>
+        <li> <a href="#"> <form action="{% url 'base:all_articles' %}">
+            {% csrf_token %}
+            <button type="submit">All Articles</button>
+        </li>
+       
+       
+    </ul>
+</div>
+{% endblock content %}

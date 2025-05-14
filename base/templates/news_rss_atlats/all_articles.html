@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Tất cả bài báo từ VnExpress</h2>
+    <div class="row">
+        {% for item in page_obj %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <img src="{{ item.image_url|default:'https://via.placeholder.com/300x200?text=No+Image' }}" class="card-img-top" alt="{{ item.title }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.title }}</h5>
+                    <p class="card-text text-muted">
+                        <small>
+                            <i class="fas fa-calendar-alt"></i> {{ item.pub_date }}
+                            {% if item.category %}
+                            <span class="badge bg-primary ms-2">{{ item.category }}</span>
+                            {% endif %}
+                        </small>
+                    </p>
+                    {% if item.description %}
+                    <p class="card-text">{{ item.description|truncatewords:30 }}</p>
+                    {% endif %}
+                    <a href="{{ item.link }}" class="btn btn-primary" target="_blank">Đọc tiếp</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Trước</a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Sau</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock content %}
