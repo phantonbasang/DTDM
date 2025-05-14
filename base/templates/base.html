@@ -1,16 +1,106 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Login Registration Demo</title>
- 
- {% load static %}
- <link rel="stylesheet" href="{% static 'css/styles_home.css'%}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tin tức VnExpress{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
+        .top-navbar { background-color: white; border-bottom: 1px solid #e5e5e5; padding: 8px 0; }
+        .navbar-brand { color: #222 !important; font-weight: 600; font-size: 24px; }
+        .navbar-brand span { color: #c00; font-weight: 700; }
+        .date-display { color: #666; font-size: 14px; padding-left: 15px; }
+        .auth-section { display: flex; align-items: center; }
+        .auth-section a { color: #666; text-decoration: none; margin-left: 20px; font-size: 14px; display: flex; align-items: center; }
+        .auth-section a:hover { color: #c00; }
+        .auth-section i { margin-right: 5px; }
+        .main-navbar { background-color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); padding: 0; }
+        .main-navbar .nav-link { color: #222 !important; font-weight: 500; padding: 15px 15px; font-size: 15px; border-bottom: 3px solid transparent; }
+        .main-navbar .nav-link:hover, .main-navbar .nav-link.active { color: #c00 !important; border-bottom: 3px solid #c00; }
+        .container { max-width: 1200px; }
+        .search-container { background-color: #f8f9fa; padding: 15px 0; border-bottom: 1px solid #e5e5e5; }
+        .search-form { max-width: 800px; margin: 0 auto; }
+        .search-form .form-control { border-radius: 20px 0 0 20px; border-right: none; height: 45px; }
+        .search-form .input-group-text { background-color: white; border-left: none; border-radius: 0 20px 20px 0; cursor: pointer; }
+        .search-form .btn-search { background-color: #c00; color: white; border: none; border-radius: 0 20px 20px 0; padding: 0 20px; }
+        .search-form .btn-search:hover { background-color: #a00; }
+        .search-form .search-advanced { font-size: 12px; margin-top: 5px; }
+        .search-form .search-advanced a { color: #666; text-decoration: none; }
+        .search-form .search-advanced a:hover { color: #c00; }
+        @media (max-width: 768px) { .search-form { max-width: 100%; } }
+    </style>
 </head>
 <body>
-    {% block content %}
+    <!-- Top Navbar with Logo and Auth -->
+    <nav class="navbar top-navbar">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand" href="{% url 'base:home' %}">RAUCON<span>_VN</span>.com</a>
+                <span class="date-display"> {% now "d/m/Y" %}</span>
+            </div>
+            <div class="auth-section">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'base:logout' %}"><i class="fas fa-sign-out-alt"></i>Đăng xuất</a>
+                {% else %}
+                    <a href="{% url 'base:login' %}"><i class="fas fa-sign-in-alt"></i>Đăng nhập</a>
+                    <a href="{% url 'base:register' %}"><i class="fas fa-user-plus"></i>Đăng ký</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Navigation Menu -->
+    <nav class="navbar navbar-expand-lg main-navbar">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'base:home' %}"><i class="fas fa-home"></i> Trang chủ</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCategory" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Danh Mục
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownCategory">
+                            {% for category in categories %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'base:category_detail' category.slug %}">{{ category.name }}</a>
+                                <a class="dropdown-item text-muted small ps-4" href="{% url 'base:home' %}?category={{ category.slug }}">(Xem RSS {{ category.name }})</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Yêu thích</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+   
+
+   
+    <!-- Main Content -->
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+
     
-    {% endblock content %}
 </body>
 </html>

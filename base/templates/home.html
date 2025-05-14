@@ -1,24 +1,54 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
+
+{% block title %}Trang chủ - Tin tức VnExpress{% endblock %}
+
 {% block content %}
-<div class='container'>
-    <p>Welcome Home </p>
-    <ul>
-        <li> <a href="#"> <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-            </form> </a> 
+<div class="container mt-4">
+    <!-- Tabs for Categories -->
+    <ul class="nav nav-tabs category-tabs mb-4" id="categoryTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if not request.GET.category %}active{% endif %}" href="?">Tất cả</a>
         </li>
-        <li> <a href="#"> <form action="{% url 'base:latest_news' %}">
-            {% csrf_token %}
-            <button type="submit">News</button>
+        {% for category in categories %}
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if request.GET.category == category.name %}active{% endif %}" href="?category={{ category.name }}">{{ category.name }}</a>
         </li>
-        <li> <a href="#"> <form action="{% url 'base:all_articles' %}">
-            {% csrf_token %}
-            <button type="submit">All Articles</button>
-        </li>
-       
-       
+        {% endfor %}
     </ul>
+
+    <!-- Articles Grid -->
+    <div class="row">
+        {% for category in categories %}
+            {% if not request.GET.category or request.GET.category == category.name %}
+                {% for article in category.latest_articles %}
+                <div class="col-md-4 mb-4">
+                    <div class="article-card h-100">
+                        {% if article.image_url %}
+                        <img src="{{ article.image_url }}" class="card-img-top" alt="{{ article.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                            <p class="card-text">{{ article.summary|truncatewords:20 }}</p>
+                            <div class="mb-3">
+                                <span class="badge bg-info">{{ article.category }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ article.published_date|date:"d/m/Y H:i" }}</small>
+                                <a href="{{ article.url }}" class="btn btn-primary" target="_blank">Đọc tiếp</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+
+        {% if not categories %}
+        <div class="col-12">
+            <div class="alert alert-info">Không có bài viết nào.</div>
+        </div>
+        {% endif %}
+    </div>
 </div>
-{% endblock content %}
+{% endblock %}
